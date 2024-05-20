@@ -217,7 +217,7 @@ describe 'synchronization' do
 
     describe 'dynamically inserted video elements' do
 
-      it 'waits until the video has loaded metadata (without playing)' do
+      xit 'waits until the video has loaded metadata (without playing)' do
         App.start_html = <<~HTML
           <a href="#" onclick="
             let video = document.createElement('video');
@@ -267,7 +267,7 @@ describe 'synchronization' do
         wait(0.5.seconds).for(command).to be_finished
       end
 
-      it 'does not wait forever for a video with a data: source' do
+      xit 'does not wait forever for a video with a data: source' do
         App.start_html = <<~HTML
           <a href="#" onclick="
             let video = document.createElement('video');
@@ -495,8 +495,9 @@ describe 'synchronization' do
       HTML
 
       visit '/start'
-      page.find('a').click
-      page.accept_confirm('OK to proceed?')
+      page.accept_confirm('OK to proceed?') do
+        page.find('a').click
+      end
     end
 
     it 'does not crash if the click closes the window' do

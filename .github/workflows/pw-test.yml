@@ -1,0 +1,48 @@
+---
+name: Tests
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+    branches:
+    - main
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ruby: 2.7.2
+          gemfile: Gemfile
+        - ruby: 3.2.0
+          gemfile: Gemfile
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Chrome
+      uses: browser-actions/setup-chrome@latest
+    - name: Show Chrome version
+      run: chrome --version
+    - name: Install ChromeDriver
+      uses: nanasess/setup-chromedriver@master
+    - name: Install ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.ruby }}"
+    - name: Bundle
+      run: |
+        gem install bundler:2.2.15
+        bundle install --no-deployment
+    - name: Run tests
+      uses: nick-invision/retry@v2
+      with:
+        timeout_seconds: 30
+        max_attempts: 3
+        command: bundle exec rake spec
